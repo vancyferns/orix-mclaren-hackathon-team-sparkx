@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   
+  /* Modern Slate Color Palette */
   color-scheme: light dark;
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
   
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -18,8 +21,76 @@ body {
   padding: 0;
   min-width: 320px;
   min-height: 100vh;
+  /* Deep Blue/Black Mesh Gradient for Enterprise feel */
+  background: radial-gradient(at top left, #1e293b, #0f172a); 
+  color: #f1f5f9;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* --- 💎 ADVANCED UI UTILITIES --- */
+
+/* 1. Ultra-Smooth Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 20px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* 2. Hero Pattern Background (Refined) */
+.bg-dot-pattern {
+  background-image: radial-gradient(#334155 0.8px, transparent 0.8px);
+  background-size: 32px 32px;
+  background-color: #0f172a;
+}
+
+/* 3. Animated Upload Border */
+.upload-dashed-border {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%234F46E5' stroke-width='3' stroke-dasharray='10%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+  border-radius: 24px;
+  transition: all 0.3s ease;
+}
+
+.upload-dashed-border:hover {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23818CF8' stroke-width='3' stroke-dasharray='15%2c 10' stroke-dashoffset='50' stroke-linecap='square'/%3e%3c/svg%3e");
+  animation: border-dance 2s infinite linear;
+}
+
+@keyframes border-dance {
+  to { background-position: 100% 100%; }
+}
+
+/* 4. Glassmorphism Card Effect */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* 5. Shimmer Loading Animation (For Skeletons) */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
 }
