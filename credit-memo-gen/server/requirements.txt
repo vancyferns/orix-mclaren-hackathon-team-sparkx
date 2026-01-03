@@ -3,3 +3,9 @@ flask-cors
 pdfplumber
 google-generativeai
 python-dotenv
+flask-sqlalchemy
+flask-migrate
+flask-jwt-extended
+flask-bcrypt
+flask-limiter
+redis
