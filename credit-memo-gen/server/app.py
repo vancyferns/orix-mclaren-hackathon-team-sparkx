@@ -1,15 +1,12 @@
-<<<<<<< Updated upstream
 # server/app.py
 import os
 import json
 import re
-=======
 # app.py
 import os
 import json
 import hashlib
 import redis
->>>>>>> Stashed changes
 import pdfplumber
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -29,8 +26,6 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
-<<<<<<< Updated upstream
-=======
 
 # --- CONFIGURATION ---
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///credit_analyst.db')
@@ -54,7 +49,6 @@ app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
 # Configure Gemini
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
->>>>>>> Stashed changes
 
 # --- UTILS ---
 def calculate_file_hash(file_stream):
@@ -75,7 +69,6 @@ def extract_text_with_references(pdf_file):
             full_text += f"\n--- PAGE {i + 1} ---\n{text}"
     return full_text
 
-<<<<<<< Updated upstream
 def clean_json_string(json_string):
     """Helper to remove markdown formatting (```json ...) if AI adds it."""
     if "```" in json_string:
@@ -83,9 +76,7 @@ def clean_json_string(json_string):
         if match:
             return match.group(1).strip()
     return json_string.strip()
-=======
 # --- ROUTES ---
->>>>>>> Stashed changes
 
 @app.route('/analyze', methods=['POST'])
 @jwt_required() # Task 1.3 Security
@@ -98,19 +89,6 @@ def analyze_pdf():
     user_id = int(get_jwt_identity())
     
     try:
-<<<<<<< Updated upstream
-        # 1. Parse PDF
-        print("   (Processing PDF...)")
-        context_text = extract_text_with_references(file)
-        
-        # 2. Initialize Model (Using our working wrapper)
-        model = get_model('gemini-flash-latest')
-        
-        prompt = f"""
-        You are a Credit Analyst. Analyze the document below.
-        
-        RETURN STRICT JSON with this structure:
-=======
         # 1. Check Caching (Task 1.2)
         file_hash = calculate_file_hash(file)
         
@@ -122,31 +100,25 @@ def analyze_pdf():
             return jsonify(existing_doc.analysis.result_json)
 
         # 2. Parse PDF (If not cached)
+        print("   (Processing PDF...)")
         context_text = extract_text_with_references(file)
         
-        # 3. Prompt Engineering
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        # 3. Initialize Model (Using our working wrapper)
+        model = get_model('gemini-flash-latest')
         
         prompt = f"""
         You are a Credit Analyst. Analyze the document.
         
         RETURN STRICT JSON:
->>>>>>> Stashed changes
         {{
           "executive_summary": "...",
           "risks": [
             {{ 
               "title": "Risk Name", 
               "description": "...", 
-<<<<<<< Updated upstream
               "severity": "High/Medium/Low", 
               "source_page": 1, 
               "confidence": "High"
-=======
-              "severity": "High/Medium", 
-              "source_page": 1, 
-              "confidence": "High" 
->>>>>>> Stashed changes
             }}
           ],
           "metrics": [
@@ -154,47 +126,29 @@ def analyze_pdf():
               "label": "Metric Name", 
               "value": "$10M", 
               "source_page": 1, 
-<<<<<<< Updated upstream
-              "confidence": "Low"
-=======
               "confidence": "Low - Inferred from text" 
->>>>>>> Stashed changes
             }}
           ]
         }}
         
-<<<<<<< Updated upstream
-=======
         INSTRUCTION: 
         - Set confidence to "High" if the number is explicitly stated in a table.
         - Set confidence to "Low" if you calculated it yourself or if the text is ambiguous.
         
->>>>>>> Stashed changes
         DOCUMENT TEXT:
         {context_text}
         """
 
-<<<<<<< Updated upstream
-        # 3. Generate Analysis
+        # 4. Generate Analysis
         print("   (Asking AI...)")
         response = model.generate_content(prompt)
         
-        # 4. Clean and Parse JSON
+        # 5. Clean and Parse JSON
         cleaned_text = clean_json_string(response.text)
-        data = json.loads(cleaned_text)
-        
-        return jsonify(data)
-=======
-        # 4. Generate Analysis
-        response = model.generate_content(
-            prompt,
-            generation_config={"response_mime_type": "application/json"}
-        )
-        
-        analysis_data = json.loads(response.text)
+        analysis_data = json.loads(cleaned_text)
 
-        # 5. Save to Database (Task 1.2)
-        # Create Document record if it doesn't exist (it might exist for another user, or previous upload failed)
+        # 6. Save to Database (Task 1.2)
+        # Create Document record if it doesn't exist
         if not existing_doc:
             new_doc = Document(
                 filename=file.filename,
@@ -213,7 +167,6 @@ def analyze_pdf():
             db.session.commit()
         
         return jsonify(analysis_data)
->>>>>>> Stashed changes
 
     except Exception as e:
         print(f"Error: {e}")
