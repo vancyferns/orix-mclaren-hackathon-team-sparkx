@@ -3,7 +3,7 @@ import React from 'react';
 const PDFViewer = ({ fileUrl, targetPage }) => {
   if (!fileUrl) {
     return (
-      <div className="h-full w-full bg-gray-100 flex items-center justify-center text-gray-400 border-r border-gray-300">
+      <div className="h-full w-full bg-slate-100 flex items-center justify-center text-slate-400 border-r border-slate-200">
         Upload a PDF to view
       </div>
     );
@@ -13,7 +13,7 @@ const PDFViewer = ({ fileUrl, targetPage }) => {
   const src = `${fileUrl}#page=${targetPage}`;
 
   return (
-    <div className="h-full w-full border-r border-gray-300">
+    <div className="h-full w-full bg-slate-100 border-r border-slate-200">
       <iframe 
         src={src} 
         className="w-full h-full" 

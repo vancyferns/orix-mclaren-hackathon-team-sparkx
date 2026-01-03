@@ -39,28 +39,37 @@ def analyze_pdf():
         model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = f"""
-        You are a senior Credit Analyst. Your job is to extract critical insights from the document below.
-        
-        RULES:
-        1. Identify the top 3-5 Credit Risks.
-        2. Extract key Financial Metrics (Revenue, EBITDA, Net Income, Debt).
-        3. **CRITICAL:** For every risk or metric, you MUST cite the 'source_page' number where you found the information.
-        4. If a piece of data is uncertain, mark 'confidence' as 'Low'.
-        
-        Return the output in this STRICT JSON format:
-        {{
-            "executive_summary": "2-3 sentence overview of the company's financial health.",
-            "risks": [
-                {{ "title": "Risk Name", "description": "Detail...", "severity": "High/Medium", "source_page": 1 }}
-            ],
-            "metrics": [
-                {{ "label": "Metric Name", "value": "$Amount", "source_page": 1, "confidence": "High" }}
-            ]
+    You are a Credit Analyst. Analyze the document.
+    
+    RETURN STRICT JSON:
+    {{
+      "executive_summary": "...",
+      "risks": [
+        {{ 
+          "title": "Risk Name", 
+          "description": "...", 
+          "severity": "High/Medium", 
+          "source_page": 1, 
+          "confidence": "High"  <-- ADD THIS FIELD
         }}
-
-        DOCUMENT TEXT:
-        {context_text}
-        """
+      ],
+      "metrics": [
+        {{ 
+          "label": "Metric Name", 
+          "value": "$10M", 
+          "source_page": 1, 
+          "confidence": "Low - Inferred from text" <-- ADD THIS FIELD
+        }}
+      ]
+    }}
+    
+    INSTRUCTION: 
+    - Set confidence to "High" if the number is explicitly stated in a table.
+    - Set confidence to "Low" if you calculated it yourself or if the text is ambiguous.
+    
+    DOCUMENT TEXT:
+    {context_text}
+    """
 
         # 3. Generate Analysis
         response = model.generate_content(
