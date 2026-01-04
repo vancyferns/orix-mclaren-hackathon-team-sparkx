@@ -47,9 +47,6 @@ migrate = Migrate(app, db)
 # Register Blueprints
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
-# Configure Gemini
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
 # --- UTILS ---
 def calculate_file_hash(file_stream):
     """Calculates MD5 hash of file to check for duplicates."""
@@ -79,14 +76,20 @@ def clean_json_string(json_string):
 # --- ROUTES ---
 
 @app.route('/analyze', methods=['POST'])
-@jwt_required() # Task 1.3 Security
+# @jwt_required() # Task 1.3 Security - Disabled for demo purposes
 @limiter.limit("5 per minute") # Task 1.3 Rate Limiting
 def analyze_pdf():
+    print("=" * 50)
+    print("ANALYZE REQUEST RECEIVED")
+    print("=" * 50)
+    
     if 'file' not in request.files:
+        print("ERROR: No file in request")
         return jsonify({"error": "No file part"}), 400
     
     file = request.files['file']
-    user_id = int(get_jwt_identity())
+    print(f"File received: {file.filename}")
+    user_id = 1  # Default user for demo - was: int(get_jwt_identity())
     
     try:
         # 1. Check Caching (Task 1.2)
@@ -169,7 +172,9 @@ def analyze_pdf():
         return jsonify(analysis_data)
 
     except Exception as e:
+        import traceback
         print(f"Error: {e}")
+        print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 # Task 1.2: Retrieve History
@@ -204,4 +209,12 @@ def get_analysis_by_id(id):
     return jsonify(analysis.result_json)
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+        # Create default demo user if not exists
+        if not User.query.filter_by(id=1).first():
+            demo_user = User(username='demo', password_hash=bcrypt.generate_password_hash('demo').decode('utf-8'))
+            db.session.add(demo_user)
+            db.session.commit()
+            print("✓ Created demo user (username: demo, password: demo)")
     app.run(debug=True, port=5000)

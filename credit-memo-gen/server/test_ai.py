@@ -5,7 +5,7 @@ from prompts import CreditMemoPrompts
 try:
     # 1. Initialize the Model (Using the new 2.0 Flash)
     print("1. Connecting to Gemini 2.0 Flash...")
-    model = get_model("gemini-flash-latest")
+    model = get_model("gemini-2.5-flash")
     
     # 2. Create a Fake Financial Document
     fake_doc = """
